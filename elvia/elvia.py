@@ -1,6 +1,7 @@
 """elvia communication."""
 from __future__ import annotations
 
+import json
 import datetime
 from typing import Any
 import urllib.error
@@ -8,7 +9,6 @@ import urllib.parse
 import urllib.request
 
 import aiohttp
-from pykson import Pykson
 
 from .elvia_schema import MaxHours, MeterValues, maxHourAggregate, meteringPointV2
 
@@ -120,9 +120,9 @@ class ElviaApi:
         if response.status_code != 200:
             raise Exception("Response is not OK", response.status_code, response.json)
 
-        meter_values: MeterValues = Pykson().from_json(response.json, MeterValues)
+        meter_values: MeterValues = MeterValues(json.loads(response.json)) # Pykson().from_json(response.json, MeterValues)
         meters = meter_values.meteringpoints
-        meter_ids = [item.metering_point_id for item in meters]
+        meter_ids = [item.meteringPointId for item in meters]
 
         return Meter(response.status_code, meter_ids)
 
@@ -151,7 +151,7 @@ class ElviaApi:
         if response.status_code != 200:
             raise Exception("Response is not OK", response.status_code, response.json)
 
-        meter_values: MeterValues = Pykson().from_json(response.json, MeterValues)
+        meter_values: MeterValues = MeterValues(json.loads(response.json)) # Pykson().from_json(response.json, MeterValues)
         return ElviaData(response.status_code, meter_values)
 
     # pylint: disable=dangerous-default-value
@@ -181,7 +181,7 @@ class ElviaApi:
         if response.status_code != 200:
             raise Exception("Response is not HTTP 200", response.json)
 
-        max_hours: MaxHours = Pykson().from_json(response.json, MaxHours)
+        max_hours: MaxHours = MaxHours(json.loads(response.json)) #   Pykson().from_json(response.json, MaxHours)
         return ElviaData(response.status_code, max_hours)
 
     async def update_meters(self) -> None:

@@ -10,9 +10,8 @@ setup(
     name="pyElvia",
     packages=["elvia"],
     install_requires=[
-        "aiohttp==3.8.1",
         "urllib3>=1.26.12",
-        "pykson>=0.9.9.8.7",
+        "aiohttp==3.8.1"
     ],
     version=consts["__version__"],
     description="A python3 library to read meter from Elvia",

@@ -1,29 +1,38 @@
 """Schema for Pykson."""
-# https://github.com/sinarezaei/pykson
-
-from pykson import (
-    BooleanField,
-    FloatField,
-    IntegerField,
-    JsonObject,
-    ObjectField,
-    ObjectListField,
-    StringField,
-)
-
 
 # https://elvia.portal.azure-api.net/docs/services/metervalueapi/operations/get-api-v2-maxhours?
 # pylint: disable=invalid-name
-class maxHour(JsonObject):
+
+from __future__ import annotations
+
+
+def kv(key: str, map: dict) -> any | None:
+    value = None if key not in map else map[key]
+#    if (value is None):
+#        print("Could not find", key, "in", map)
+    return value
+
+class maxHour():
     """Schema object."""
 
-    startTime = StringField(serialized_name="startTime")
-    endTime = StringField(serialized_name="endTime")
-    value = FloatField(serialized_name="value")
-    uom = StringField(serialized_name="uom")
-    noOfMonthsBack = IntegerField(serialized_name="noOfMonthsBack")
-    production = BooleanField(serialized_name="production")
-    verified = BooleanField(serialized_name="verified")
+    startTime: str
+    endTime: str
+    value: float
+    uom: str
+    noOfMonthsBack: int
+    production: bool
+    verified: bool
+
+    def __init__(self, map: dict) -> None:
+        self.startTime = kv("startTime", map)
+        self.endTime = kv("endTime", map)
+        self.value = kv("value", map)
+        self.uom = kv("uom", map)
+        self.noOfMonthsBack = kv("noOfMonthsBack", map)
+        self.production = kv("production", map)
+        self.verified = kv("verified", map)
+        
+
 
     def __str__(self) -> str:
         """Override default str in order to get data as a string."""
@@ -33,13 +42,22 @@ class maxHour(JsonObject):
 
 
 # pylint: disable=invalid-name
-class maxHourAggregate(JsonObject):
+class maxHourAggregate():
     """Schema object."""
 
-    averageValue = FloatField(serialized_name="averageValue")
-    maxHours: list[maxHour] = ObjectListField(maxHour, serialized_name="maxHours")
-    uom = StringField(serialized_name="uom")
-    noOfMonthsBack = IntegerField(serialized_name="noOfMonthsBack")
+    averageValue: float
+    maxHours: list[maxHour] = []
+    uom: str
+    noOfMonthsBack: int
+    
+    def __init__(self, map: dict) -> None:
+        self.averageValue = kv("averageValue", map)
+        self.uom = kv("uom", map)
+        self.noOfMonthsBack = kv("noOfMonthsBack", map)        
+        self.maxHours = [maxHour(item) for item in map["maxHours"]]
+        
+        
+        
 
     def __str__(self) -> str:
         """Override default str in order to get data as a string."""
@@ -47,86 +65,113 @@ class maxHourAggregate(JsonObject):
 
 
 # pylint: disable=invalid-name
-class contractV2(JsonObject):
+class contractV2():
     """Schema object."""
 
-    startDate = StringField(serialized_name="startDate")
-    endDate = StringField(serialized_name="endDate")
+    startDate: str
+    endDate: str
+    
+    def __init__(self, map: dict) -> None:
+        self.startDate = kv("startDate", map)
+        self.endDate = kv("endDate", map)
 
 
 # pylint: disable=invalid-name
-class meteringPointV2(JsonObject):
+class meteringPointV2():
     """Schema object."""
 
-    meteringPointId = StringField(serialized_name="meteringPointId")
-    maxHoursCalculatedTime = StringField(serialized_name="maxHoursCalculatedTime")
-    maxHoursFromTime = StringField(serialized_name="maxHoursFromTime")
-    maxHoursToTime = StringField(serialized_name="maxHoursToTime")
-    customerContract: contractV2 = ObjectField(
-        contractV2, serialized_name="customerContract"
-    )
-    maxHoursAggregate: list[maxHourAggregate] = ObjectListField(
-        maxHourAggregate, serialized_name="maxHoursAggregate"
-    )
+
+    meteringPointId: str
+    maxHoursCalculatedTime: str
+    maxHoursFromTime: str
+    maxHoursToTime: str
+    customerContract: contractV2
+    maxHoursAggregate: list[maxHourAggregate]
+    
+    def __init__(self, map: dict) -> None:
+        self.meteringPointId = kv("meteringPointId", map)
+        self.maxHoursCalculatedTime = kv("maxHoursCalculatedTime", map)
+        self.maxHoursFromTime = kv("maxHoursFromTime", map)
+        self.maxHoursToTime = kv("maxHoursToTime", map)
+        self.customerContract = kv("customerContract", map)
+        self.maxHoursAggregate = [maxHourAggregate(item) for item in map["maxHoursAggregate"]]
 
 
-class MaxHours(JsonObject):
+class MaxHours():
     """Schema object."""
+    meteringpoints: list[meteringPointV2]
+    
+    def __init__(self, map: dict) -> None:
+        self.meteringpoints = [meteringPointV2(item) for item in map["meteringpoints"]]
 
-    meteringpoints: list[meteringPointV2] = ObjectListField(
-        meteringPointV2, serialized_name="meteringpoints"
-    )
 
 
 # https://elvia.portal.azure-api.net/docs/services/metervalueapi/operations/get-api-v1-metervalues?
 
 
 # pylint: disable=invalid-name
-class timeSerie(JsonObject):
+class timeSerie():
     """Schema object."""
 
-    start_time = StringField(serialized_name="startTime")
-    end_time = StringField(serialized_name="endTime")
-    value = FloatField(serialized_name="value")
-    uom = StringField(serialized_name="uom")
-    production = BooleanField(serialized_name="production")
-    verified = BooleanField(serialized_name="verified")
+    startTime: str
+    endTime: str
+    value: float
+    uom: str
+    production: bool = False
+    verified: bool = False
+    
+    def __init__(self, map: dict) -> None:
+        self.startTime = kv("startTime", map)
+        self.endTime = kv("endTime", map)
+        self.value = kv("value", map)
+        self.uom = kv("uom", map)
+        self.production = kv("production", map)
+        self.verified = kv("verified", map)
+        
 
 
 # pylint: disable=invalid-name
-class meterValue(JsonObject):
+class MeterValue():
     """Schema object."""
-
-    from_hour = StringField(serialized_name="fromHour")
-    to_hour = StringField(serialized_name="toHour")
-    resolution_minutes = IntegerField(serialized_name="resolutionMinutes")
-    time_series: list[timeSerie] = ObjectListField(
-        timeSerie, serialized_name="timeSeries"
-    )
-
+    fromHour: str
+    toHour: str
+    resolutionMinutes: int
+    timeSeries: list[timeSerie]
+    
+    def __init__(self, map: dict) -> None:
+        self.fromHour = kv("fromHour", map)
+        self.toHour = kv("toHour", map)
+        self.resolutionMinutes = kv("resolutionMinutes", map)
+        self.timeSeries = [timeSerie(item) for item in map["timeSeries"]]
+        
 
 # pylint: disable=invalid-name
-class contractV1(JsonObject):
+class contractV1():
     """Schema object."""
-
-    start_time = StringField(serialized_name="startTime")
-    end_time = StringField(serialized_name="endTime")
-
+    startTime: str
+    endTime: str
+    
+    def __init__(self, map: dict) -> None:
+        self.startTime = kv("startTime", map)
+        self.endTime = kv("endTime", map)
 
 # pylint: disable=invalid-name
-class meteringPointV1(JsonObject):
+class meteringPointV1():
+    """Schema object."""
+    meteringPointId: str
+    meterValue: MeterValue
+    customerContract: contractV1
+    
+    def __init__(self, map: dict) -> None:
+        self.meteringPointId = kv("meteringPointId", map)
+        self.meterValue = MeterValue(kv("metervalue", map))
+        self.customerContract = contractV1(kv("customerContract", map))
+
+
+class MeterValues():
     """Schema object."""
 
-    metering_point_id = StringField(serialized_name="meteringPointId")
-    customer_contract: contractV1 = ObjectField(
-        contractV1, serialized_name="customerContract"
-    )
-    meter_value: meterValue = ObjectField(meterValue, serialized_name="metervalue")
-
-
-class MeterValues(JsonObject):
-    """Schema object."""
-
-    meteringpoints: list[meteringPointV1] = ObjectListField(
-        meteringPointV1, serialized_name="meteringpoints"
-    )
+    meteringpoints: list[meteringPointV1]
+    
+    def __init__(self, map: dict) -> None:
+        self.meteringpoints = [meteringPointV1(item) for item in map["meteringpoints"]]
