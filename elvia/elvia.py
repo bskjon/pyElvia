@@ -129,6 +129,10 @@ class ElviaApi:
     # pylint: disable=dangerous-default-value
     async def get_meter_values(
         self,
+        start_time: datetime = datetime.datetime.now()
+            .replace(hour=0, minute=0, second=0, microsecond=0),
+        end_time: datetime = datetime.datetime.now()
+            .replace(minute=0, second=0, microsecond=0) + datetime.timedelta(hours=1),
         metering_ids: list[str] = [],
         include_production: bool = False,
         timeout_sec: int = 30,
@@ -138,8 +142,8 @@ class ElviaApi:
         params = urllib.parse.urlencode(
             {
                 # Request parameters
-                #    "startTime": "{string}",
-                #    "endTime": "{string}",
+                "startTime": start_time.isoformat(),
+                "endTime": end_time.isoformat(),
                 #    "meteringPointIds": "{array}",
                 "includeProduction": include_production,
             }
