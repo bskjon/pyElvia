@@ -4,6 +4,7 @@
 # pylint: disable=invalid-name
 
 from __future__ import annotations
+from typing import Optional
 
 
 def kv(key: str, map: dict) -> any | None:
@@ -17,13 +18,15 @@ class maxHour():
 
     startTime: str
     endTime: str
-    value: float
-    uom: str
-    noOfMonthsBack: int
-    production: bool
-    verified: bool
+    value: float = 0.0
+    uom: str = "kwh"
+    noOfMonthsBack: int = 0
+    production: bool = False
+    verified: bool = False
 
-    def __init__(self, map: dict) -> None:
+    def __init__(self, map: Optional[dict]) -> None:
+        if (map is None):
+            return
         self.startTime = kv("startTime", map)
         self.endTime = kv("endTime", map)
         self.value = kv("value", map)
@@ -45,12 +48,14 @@ class maxHour():
 class maxHourAggregate():
     """Schema object."""
 
-    averageValue: float
+    averageValue: float = 0.0
     maxHours: list[maxHour] = []
-    uom: str
-    noOfMonthsBack: int
+    uom: str = "kWh"
+    noOfMonthsBack: int = 0
     
-    def __init__(self, map: dict) -> None:
+    def __init__(self, map: Optional[dict]) -> None:
+        if (map is None):
+            return
         self.averageValue = kv("averageValue", map)
         self.uom = kv("uom", map)
         self.noOfMonthsBack = kv("noOfMonthsBack", map)        

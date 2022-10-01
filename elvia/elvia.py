@@ -10,7 +10,7 @@ import urllib.request
 
 import aiohttp
 
-from .elvia_schema import MaxHours, MeterValues, maxHourAggregate, meteringPointV2
+from .elvia_schema import MaxHours, MeterValues, maxHour, maxHourAggregate, meteringPointV2
 
 
 class ElviaWebResponse:
@@ -242,9 +242,8 @@ class Elvia:
         if data is None:
             return data
         if data.noOfMonthsBack != 0:
-            raise DataIsNotOfCurrentMonth(
-                f"Data is not of current, but of {data.noOfMonthsBack} months back"
-            )
+            print(f"Data is not of current, but of {data.noOfMonthsBack} months back, returning zeroed as data is not ready yet")
+            return maxHourAggregate()
         return data
 
     def get_grid_level(self, kwh: float) -> int:
