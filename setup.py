@@ -5,9 +5,16 @@ from setuptools import setup
 consts = {}
 with open(os.path.join("elvia", "const.py")) as fp:
     exec(fp.read(), consts)
+    
+def readme():
+    with open('README.md') as f:
+        return f.read()
+
 
 setup(
     name="pyElvia",
+    long_description_content_type='text/markdown',
+    long_description=readme(),
     packages=["elvia"],
     install_requires=[
         "urllib3>=1.26.12",
