@@ -21,7 +21,7 @@ setup(
         "aiohttp==3.8.1"
     ],
     version=consts["__version__"],
-    description="A python3 library to read meter from Elvia",
+    description="""A python3 library to read meter from Elvia""",
     python_requires=">=3.9.0",
     author="Brage Skjønborg",
     author_email="bskjon@outlook.com",
