@@ -18,7 +18,7 @@ setup(
     packages=["elvia"],
     install_requires=[
         "urllib3>=1.26.12",
-        "aiohttp==3.8.1"
+        "aiohttp>=3.8.1"
     ],
     version=consts["__version__"],
     description="""A python3 library to read meter from Elvia""",
